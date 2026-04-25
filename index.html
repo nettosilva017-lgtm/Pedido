@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Ouxe Marketing - Vendas</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+    <style>
+        :root { --azul-ouxe: #00a0e4; --fundo: #f0f2f5; }
+        body { background-color: var(--fundo); font-family: 'Segoe UI', sans-serif; overflow-x: hidden; }
+        .navbar-ouxe { background: var(--azul-ouxe); color: white; padding: 1.5rem 1rem; border-radius: 0 0 25px 25px; }
+        .card-custom { border: none; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.08); margin-bottom: 20px; }
+        .btn-ouxe { background-color: var(--azul-ouxe); color: white; font-weight: bold; border-radius: 10px; }
+        .btn-whats { background-color: #25d366; color: white; font-weight: bold; border-radius: 15px; padding: 15px; font-size: 1.1rem; }
+        .nav-pills .nav-link { color: #666; font-weight: 500; transition: 0.3s; }
+        .nav-pills .nav-link.active { background-color: var(--azul-ouxe); shadow: 0 4px 10px rgba(0,160,228,0.3); }
+        .hidden { display: none !important; }
+        .item-lista { border-bottom: 1px solid #eee; padding: 12px 5px; font-size: 1rem; }
+        .item-carrinho { border-bottom: 1px solid #eee; padding: 12px 0; }
+        select, input { border-radius: 10px !important; padding: 12px !important; }
+        
+        /* Ajustes específicos para Celular */
+        @media (max-width: 576px) {
+            .container { padding-left: 15px; padding-right: 15px; }
+            .h4 { font-size: 1.2rem; }
+            .row-cadastro { flex-direction: column; }
+            .col-cadastro { width: 100% !important; margin-bottom: 20px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header class="navbar-ouxe text-center mb-4 shadow">
+        <h1 class="h4 m-0 fw-bold text-uppercase">OUXE MARKETING</h1>
+        <small class="opacity-75">Sistema de Gestão Mobile</small>
+    </header>
+
+    <div class="container">
+        <ul class="nav nav-pills nav-fill mb-4 p-1 bg-white rounded-pill shadow-sm">
+            <li class="nav-item"><button id="btn-vendas" class="nav-link active rounded-pill" onclick="showTab('vendas')"><i class="bi bi-cart3"></i> Vendas</button></li>
+            <li class="nav-item"><button id="btn-cadastro" class="nav-link rounded-pill" onclick="showTab('cadastro')"><i class="bi bi-plus-circle"></i> Cadastro</button></li>
+        </ul>
+
+        <section id="tab-vendas">
+            <div class="card card-custom p-3 p-md-4">
+                <label class="form-label small fw-bold text-muted text-uppercase">Selecionar Cliente</label>
+                <select id="venda-cliente" class="form-select mb-4 shadow-sm text-uppercase"></select>
+
+                <label class="form-label small fw-bold text-muted text-uppercase">Produto e Qtd</label>
+                <div class="input-group mb-3 shadow-sm">
+                    <select id="venda-produto" class="form-select" style="flex: 2;"></select>
+                    <input type="number" id="venda-qtd" class="form-control" value="1" min="1" style="flex: 0.6; text-align: center;">
+                    <button class="btn btn-ouxe px-3" onclick="adicionarAoCarrinho()"><i class="bi bi-plus-lg"></i></button>
+                </div>
+
+                <div id="carrinho-lista" class="mb-4 bg-light p-3 rounded-3" style="min-height: 60px;">
+                    <p class="text-muted small text-center m-0">Nenhum item no pedido.</p>
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center p-3 border-top border-bottom mb-3">
+                    <span class="fw-bold text-muted">TOTAL:</span>
+                    <span class="h3 m-0 fw-bold text-success" id="total-pedido">R$ 0,00</span>
+                </div>
+
+                <button onclick="enviarWhatsApp()" class="btn btn-whats w-100 shadow border-0 mb-2">
+                    <i class="bi bi-whatsapp"></i> ENVIAR PEDIDO AGORA
+                </button>
+                <button onclick="limparCarrinho()" class="btn btn-sm btn-link text-danger text-decoration-none w-100">Limpar Carrinho</button>
+            </div>
+        </section>
+
+        <section id="tab-cadastro" class="hidden">
+            <div class="card card-custom p-3 p-md-4">
+                <h6 class="fw-bold mb-3 text-uppercase color-azul-ouxe">Novo Registro</h6>
+                <div class="mb-2">
+                    <input type="text" id="cad-nome" class="form-control" placeholder="Nome do Cliente ou Produto">
+                </div>
+                <div class="mb-3">
+                    <input type="number" id="cad-preco" class="form-control" placeholder="Preço R$ (Só para produtos)">
+                </div>
+                <div class="row g-2">
+                    <div class="col-6">
+                        <button onclick="salvar('cliente')" class="btn btn-ouxe w-100 py-2">Salvar Cliente</button>
+                    </div>
+                    <div class="col-6">
+                        <button onclick="salvar('produto')" class="btn btn-outline-primary w-100 py-2 fw-bold" style="border-radius:10px">Salvar Prod.</button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card card-custom p-3 p-md-4">
+                <h6 class="fw-bold mb-3 text-uppercase text-muted">Gerenciar Dados</h6>
+                <div class="row row-cadastro">
+                    <div class="col-12 col-cadastro mb-4">
+                        <div class="p-2 bg-light rounded-top fw-bold small text-primary"><i class="bi bi-people-fill"></i> CLIENTES (A-Z)</div>
+                        <div id="lista-clientes-cad" class="bg-white border border-top-0 rounded-bottom px-2"></div>
+                    </div>
+                    <div class="col-12 col-cadastro">
+                        <div class="p-2 bg-light rounded-top fw-bold small text-success"><i class="bi bi-box-seam"></i> PRODUTOS (A-Z)</div>
+                        <div id="lista-produtos-cad" class="bg-white border border-top-0 rounded-bottom px-2"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
+
+    <script>
+        let clientes = JSON.parse(localStorage.getItem('ouxe_clientes')) || ["Edimundo Netto", "Milena", "Vanilde", "Bruno", "Brayan"];
+        let produtos = JSON.parse(localStorage.getItem('ouxe_produtos')) || [];
+        let carrinho = [];
+
+        function ordenarDados() {
+            clientes.sort((a, b) => a.localeCompare(b));
+            produtos.sort((a, b) => a.nome.localeCompare(b.nome));
+        }
+
+        function showTab(tab) {
+            document.getElementById('tab-vendas').classList.toggle('hidden', tab !== 'vendas');
+            document.getElementById('tab-cadastro').classList.toggle('hidden', tab !== 'cadastro');
+            document.getElementById('btn-vendas').classList.toggle('active', tab === 'vendas');
+            document.getElementById('btn-cadastro').classList.toggle('active', tab === 'cadastro');
+            renderSelects();
+            if(tab === 'cadastro') renderListasCadastro();
+            window.scrollTo(0,0);
+        }
+
+        function renderSelects() {
+            ordenarDados();
+            document.getElementById('venda-cliente').innerHTML = clientes.map(c => `<option value="${c}">${c.toUpperCase()}</option>`).join('');
+            document.getElementById('venda-produto').innerHTML = produtos.map((p, i) => `<option value="${i}">${p.nome.toUpperCase()} - R$ ${p.preco.toFixed(2)}</option>`).join('');
+        }
+
+        function renderListasCadastro() {
+            ordenarDados();
+            const listC = document.getElementById('lista-clientes-cad');
+            const listP = document.getElementById('lista-produtos-cad');
+            
+            listC.innerHTML = clientes.map((c, i) => `
+                <div class="item-lista d-flex justify-content-between align-items-center">
+                    <span class="text-uppercase">${c}</span>
+                    <i class="bi bi-trash text-danger p-2" onclick="apagar('cliente', ${i})"></i>
+                </div>`).join('');
+
+            listP.innerHTML = produtos.map((p, i) => `
+                <div class="item-lista d-flex justify-content-between align-items-center">
+                    <div style="max-width: 65%;">
+                        <span class="text-uppercase fw-bold" style="font-size:0.9rem">${p.nome}</span><br>
+                        <small class="text-success">R$ ${p.preco.toFixed(2)}</small>
+                    </div>
+                    <div>
+                        <i class="bi bi-pencil-square text-primary p-2 me-1" onclick="alterarPreco(${i})"></i>
+                        <i class="bi bi-trash text-danger p-2" onclick="apagar('produto', ${i})"></i>
+                    </div>
+                </div>`).join('');
+        }
+
+        function alterarPreco(index) {
+            const novoPreco = prompt(`Novo preço para ${produtos[index].nome}:`, produtos[index].preco);
+            if (novoPreco !== null && !isNaN(parseFloat(novoPreco))) {
+                produtos[index].preco = parseFloat(novoPreco);
+                localStorage.setItem('ouxe_produtos', JSON.stringify(produtos));
+                renderListasCadastro();
+                renderSelects();
+            }
+        }
+
+        function adicionarAoCarrinho() {
+            const pIndex = document.getElementById('venda-produto').value;
+            const qtd = parseInt(document.getElementById('venda-qtd').value) || 1;
+            if(!produtos[pIndex]) return;
+            carrinho.push({ ...produtos[pIndex], quantidade: qtd });
+            document.getElementById('venda-qtd').value = 1;
+            atualizarCarrinhoVisual();
+        }
+
+        function atualizarCarrinhoVisual() {
+            const lista = document.getElementById('carrinho-lista');
+            const totalText = document.getElementById('total-pedido');
+            if(carrinho.length === 0) {
+                lista.innerHTML = '<p class="text-muted small text-center m-0">Nenhum item no pedido.</p>';
+                totalText.innerText = 'R$ 0,00';
+                return;
+            }
+            let total = 0;
+            lista.innerHTML = carrinho.map((item, index) => {
+                const sub = item.preco * item.quantidade;
+                total += sub;
+                return `<div class="item-carrinho d-flex justify-content-between align-items-center">
+                    <span><span class="badge bg-primary me-2">${item.quantidade}x</span> ${item.nome.toUpperCase()}</span>
+                    <div class="d-flex align-items-center">
+                        <span class="fw-bold me-3">R$ ${sub.toFixed(2)}</span>
+                        <i class="bi bi-x-circle-fill text-danger fs-5" onclick="removerItem(${index})"></i>
+                    </div>
+                </div>`;
+            }).join('');
+            totalText.innerText = `R$ ${total.toFixed(2)}`;
+        }
+
+        function removerItem(index) { carrinho.splice(index, 1); atualizarCarrinhoVisual(); }
+        function limparCarrinho() { if(confirm("Limpar todo o pedido?")) { carrinho = []; atualizarCarrinhoVisual(); } }
+
+        function salvar(tipo) {
+            const nome = document.getElementById('cad-nome').value.trim();
+            const preco = parseFloat(document.getElementById('cad-preco').value);
+            if(!nome) return alert("Preencha o nome!");
+            if(tipo === 'cliente') {
+                if(clientes.some(c => c.toLowerCase() === nome.toLowerCase())) return alert("Já existe!");
+                clientes.push(nome);
+                localStorage.setItem('ouxe_clientes', JSON.stringify(clientes));
+            } else {
+                if(isNaN(preco)) return alert("Preço inválido!");
+                if(produtos.some(p => p.nome.toLowerCase() === nome.toLowerCase())) return alert("Já existe!");
+                produtos.push({nome, preco});
+                localStorage.setItem('ouxe_produtos', JSON.stringify(produtos));
+            }
+            document.getElementById('cad-nome').value = ""; document.getElementById('cad-preco').value = "";
+            renderSelects(); renderListasCadastro();
+        }
+
+        function apagar(tipo, index) {
+            if(!confirm("Excluir permanentemente?")) return;
+            if(tipo === 'cliente') { clientes.splice(index, 1); localStorage.setItem('ouxe_clientes', JSON.stringify(clientes)); }
+            else { produtos.splice(index, 1); localStorage.setItem('ouxe_produtos', JSON.stringify(produtos)); }
+            renderSelects(); renderListasCadastro();
+        }
+
+        function enviarWhatsApp() {
+            if(carrinho.length === 0) return alert("Adicione itens primeiro!");
+            const cliente = document.getElementById('venda-cliente').value;
+            const dataAtual = new Date().toLocaleDateString('pt-BR');
+            let totalGeral = 0;
+            let itensStr = "";
+
+            carrinho.forEach(item => {
+                const sub = item.quantidade * item.preco;
+                totalGeral += sub;
+                itensStr += `┃ *${item.quantidade.toString().padEnd(3)}* ┃ *${item.nome.toUpperCase().padEnd(18).substring(0,18)}* ┃ *${sub.toFixed(2).padStart(8)}* ┃\n`;
+            });
+
+            const msg = `*┏━━━━━━━━━━━━━━━━━━━━━━━━━━━━┓*
+┃ *VendaPRO! App* ┃
+┃ *Controle de Vendas* ┃
+┃ *PEDIDO* *DATA* ┃
+┃               *${dataAtual}* ┃
+*┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫*
+┃ *NOME* ┃
+┃ *${cliente.toUpperCase().padEnd(26)}* ┃
+*┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫*
+┃ *CIDADE* *CEP* ┃
+┃ *Ipira, Bahia* ┃
+*┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫*
+┃ *QT  | DESCRIÇÃO        | TOTAL* ┃
+${itensStr}*┣━━━━━━━━━━━━━━━━━━━━━━━━━━━━┫*
+┃               *TOTAL* *${totalGeral.toFixed(2).padStart(11)}* ┃
+*┗━━━━━━━━━━━━━━━━━━━━━━━━━━━━┛*`;
+
+            window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        }
+        renderSelects();
+    </script>
+</body>
+</html>
