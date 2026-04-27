@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Ouxe Marketing - Vendas</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+  <style>
+    :root {
+      --azul-ouxe: #00a0e4;
+      --azul-ouxe-dark: #007fba;
+      --verde: #16a34a;
+      --vermelho: #dc2626;
+      --fundo: #eef3f8;
+      --card: #ffffff;
+      --radius: 18px;
+    }
+
+    body { background: var(--fundo); font-family: "Segoe UI", sans-serif; padding-bottom: 20px; }
+    .hidden { display: none !important; }
+    
+    /* Container responsivo */
+    .app-shell { 
+      width: 100%; 
+      max-width: 520px; 
+      margin: 0 auto; 
+      padding: 0 10px;
+    }
+    
+    .app-header {
+      background: linear-gradient(135deg, var(--azul-ouxe) 0%, #0073cf 100%);
+      color: white; 
+      padding: 15px; 
+      border-radius: 0 0 24px 24px; 
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+      margin: 0 -10px 15px -10px;
+    }
+
+    .tag-mobile {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.4);
+      padding: 2px 8px;
+      border-radius: 6px;
+      font-size: 0.65rem;
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+
+    .nav-wrap { 
+      background: white; 
+      border-radius: 18px; 
+      padding: 5px; 
+      margin-bottom: 15px; 
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05); 
+    }
+    
+    .nav-pills .nav-link { 
+      border-radius: 14px; 
+      padding: 10px; 
+      font-size: 0.9rem;
+    }
+    
+    .nav-pills .nav-link.active { background: var(--azul-ouxe); font-weight: bold; }
+
+    .section-card { 
+      background: var(--card); 
+      border-radius: var(--radius); 
+      padding: 15px; 
+      margin-bottom: 15px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05); 
+    }
+    
+    /* Ajuste para inputs em telas pequenas */
+    .input-group-mobile {
+      display: flex;
+      flex-direction: row;
+      gap: 8px;
+      margin-bottom: 15px;
+    }
+    
+    .input-group-mobile select { flex: 1; }
+    .input-group-mobile input { width: 70px; }
+
+    .action-box {
+      background: #f8fbff; 
+      border: 2px solid #dbeafe; 
+      border-radius: 20px; 
+      padding: 15px; 
+    }
+
+    .btn-send {
+      height: 52px; 
+      border-radius: 14px; 
+      border: none; 
+      font-weight: 800;
+      display: flex; 
+      align-items: center; 
+      justify-content: center; 
+      gap: 10px;
+      color: white; 
+      width: 100%; 
+      text-decoration: none;
+    }
+    .btn-share { background: linear-gradient(135deg, #6366f1, #4f46e5); }
+
+    .item-lista { 
+      display: flex; 
+      justify-content: space-between; 
+      align-items: center; 
+      padding: 10px 0; 
+      border-bottom: 1px solid #eee; 
+      font-size: 0.9rem;
+    }
+    
+    .icon-trash { color: var(--vermelho); cursor: pointer; font-size: 1.1rem; padding: 5px; }
+    .icon-edit { color: var(--azul-ouxe); cursor: pointer; font-size: 1.1rem; margin-right: 10px; padding: 5px; }
+
+    /* Espelho invisível para captura */
+    #espelho-pedido {
+      width: 700px; background: white; position: absolute; left: -9999px; top: 0; padding: 40px;
+    }
+    
+    .img-table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+    .img-table th { background: #f4f4f4; border: 1px solid #ddd; padding: 12px; text-align: left; }
+    .img-table td { border: 1px solid #ddd; padding: 12px; }
+
+    /* Estilo Mobile-First para Listas */
+    #carrinho-lista {
+      max-height: 250px;
+      overflow-y: auto;
+    }
+
+    @media (max-width: 400px) {
+      .h4 { font-size: 1.1rem; }
+      .btn-send { font-size: 0.9rem; }
+    }
+  </style>
+</head>
+<body>
+
+  <div id="espelho-pedido">
+    <div style="text-align:center; border-bottom:2px solid #00a0e4; padding-bottom:20px;">
+      <h1 style="color:#0073cf; margin:0; font-size:38px;">Ouxe Marketing</h1>
+      <p style="color:#666; font-size:18px;">Espelho de Pedido de Venda</p>
+    </div>
+    <div style="display:flex; justify-content:space-between; margin-top:20px; font-size:18px;">
+      <div><b>Cliente:</b> <span id="img-cliente"></span><br><b>Cidade:</b> Feira de Santana</div>
+      <div style="text-align:right"><b>Data:</b> <span id="img-data"></span><br><b>Rep:</b> Vendedor</div>
+    </div>
+    <table class="img-table">
+      <thead>
+        <tr><th>Qtd</th><th>Produto</th><th>Unit.</th><th>Total</th></tr>
+      </thead>
+      <tbody id="img-corpo"></tbody>
+      <tfoot>
+        <tr style="font-weight:bold; font-size:24px; background:#f8fbff;">
+          <td colspan="3" style="text-align:right">TOTAL DO PEDIDO</td>
+          <td id="img-total" style="color:#0073cf"></td>
+        </tr>
+      </tfoot>
+    </table>
+    <div style="text-align:center; margin-top:25px; padding-top:20px; border-top:1px dashed #ccc;">
+      <a href="https://nettosilva017-lgtm.github.io/Amazonas/" target="_blank" style="color:#15803d; text-decoration:none; font-weight:bold; font-size:20px;">
+        <i class="bi bi-cart-check-fill"></i> Compre online
+      </a>
+    </div>
+  </div>
+
+  <div class="app-shell">
+    <header class="app-header">
+      <div class="d-flex align-items-center justify-content-center gap-2 mb-1">
+        <i class="bi bi-cart4 fs-3"></i>
+        <h1 class="h4 fw-bold m-0 text-uppercase">Ouxe Marketing</h1>
+        <span class="tag-mobile">App</span>
+      </div>
+      <small>Feira de Santana - Bahia</small>
+    </header>
+
+    <main>
+      <div class="nav-wrap">
+        <ul class="nav nav-pills nav-fill">
+          <li class="nav-item"><button id="tab-v-btn" class="nav-link active" onclick="showTab('vendas')">Vendas</button></li>
+          <li class="nav-item"><button id="tab-c-btn" class="nav-link" onclick="showTab('cadastro')">Cadastro</button></li>
+        </ul>
+      </div>
+
+      <section id="tab-vendas">
+        <div class="section-card">
+          <label class="small fw-bold text-secondary mb-1">CLIENTE</label>
+          <select id="venda-cliente" class="form-select mb-3 text-uppercase"></select>
+
+          <label class="small fw-bold text-secondary mb-1">PRODUTO</label>
+          <div class="input-group-mobile">
+            <select id="venda-produto" class="form-select"></select>
+            <input type="number" id="venda-qtd" class="form-control" value="1" inputmode="numeric">
+            <button class="btn btn-primary" style="background:var(--azul-ouxe); border:none" onclick="addCarrinho()">
+              <i class="bi bi-plus-lg"></i>
+            </button>
+          </div>
+
+          <div id="carrinho-lista" class="border rounded p-2 mb-2" style="min-height: 80px; background: #fafafa;"></div>
+          <div class="h3 text-end text-success fw-bold m-0" id="total-venda">R$ 0,00</div>
+        </div>
+
+        <div class="action-box">
+          <button onclick="gerarImagem()" class="btn-send btn-share mb-2">
+            <i class="bi bi-camera fs-4"></i> COMPARTILHAR
+          </button>
+          <button onclick="limparCarrinho()" class="btn btn-link text-danger w-100 p-0 text-decoration-none small">Limpar Carrinho</button>
+        </div>
+      </section>
+
+      <section id="tab-cadastro" class="hidden">
+        <div class="section-card">
+          <label class="small fw-bold text-secondary mb-1">NOVO ITEM</label>
+          <input type="text" id="cad-nome" class="form-control mb-2" placeholder="Nome do Cliente ou Produto">
+          <input type="number" id="cad-preco" class="form-control mb-3" placeholder="Preço R$ (apenas para produto)" inputmode="decimal">
+          <div class="d-flex gap-2">
+            <button onclick="salvar('cliente')" class="btn btn-primary w-100" style="background:var(--azul-ouxe); border:none"> + CLIENTE</button>
+            <button onclick="salvar('produto')" class="btn btn-dark w-100"> + PRODUTO</button>
+          </div>
+        </div>
+        
+        <div class="section-card">
+          <h6 class="fw-bold border-bottom pb-2 small">CLIENTES</h6>
+          <div id="lista-clientes-cad"></div>
+        </div>
+
+        <div class="section-card">
+          <h6 class="fw-bold border-bottom pb-2 small">PRODUTOS</h6>
+          <div id="lista-produtos-cad"></div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    // Lógica permanece a mesma do seu original
+    let clientes = JSON.parse(localStorage.getItem('ouxe_clientes')) || ["Edimundo Netto", "Vanilde"];
+    let produtos = JSON.parse(localStorage.getItem('ouxe_produtos')) || [];
+    let carrinho = [];
+
+    function formatar(v) { return v.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }); }
+
+    function showTab(t) {
+      document.getElementById('tab-vendas').classList.toggle('hidden', t !== 'vendas');
+      document.getElementById('tab-cadastro').classList.toggle('hidden', t !== 'cadastro');
+      document.getElementById('tab-v-btn').classList.toggle('active', t === 'vendas');
+      document.getElementById('tab-c-btn').classList.toggle('active', t === 'cadastro');
+      renderListas();
+    }
+
+    function renderListas() {
+      document.getElementById('venda-cliente').innerHTML = clientes.map(c => `<option>${c.toUpperCase()}</option>`).join('');
+      document.getElementById('venda-produto').innerHTML = produtos.map((p, i) => `<option value="${i}">${p.nome.toUpperCase()} - ${formatar(p.preco)}</option>`).join('');
+      
+      document.getElementById('lista-clientes-cad').innerHTML = clientes.map((c, i) => `
+        <div class="item-lista"><span class="text-uppercase">${c}</span><i class="bi bi-trash icon-trash" onclick="apagar('cliente', ${i})"></i></div>`).join('');
+
+      document.getElementById('lista-produtos-cad').innerHTML = produtos.map((p, i) => `
+        <div class="item-lista"><div><b class="text-uppercase">${p.nome}</b><br><span class="text-success">${formatar(p.preco)}</span></div><div><i class="bi bi-pencil-square icon-edit" onclick="editarPreco(${i})"></i><i class="bi bi-trash icon-trash" onclick="apagar('produto', ${i})"></i></div></div>`).join('');
+    }
+
+    function addCarrinho() {
+      const i = document.getElementById('venda-produto').value;
+      const q = parseInt(document.getElementById('venda-qtd').value) || 1;
+      if (i === "" || !produtos[i]) return;
+      carrinho.push({ ...produtos[i], qtd: q });
+      renderCarrinho();
+    }
+
+    function renderCarrinho() {
+      let total = 0;
+      document.getElementById('carrinho-lista').innerHTML = carrinho.map((it, idx) => {
+        total += it.preco * it.qtd;
+        return `<div class="d-flex justify-content-between align-items-center border-bottom py-2 small"><span>${it.qtd}x ${it.nome.toUpperCase()}</span><div class="d-flex align-items-center"><b>${formatar(it.preco * it.qtd)}</b><i class="bi bi-x-circle text-danger ms-2" style="cursor:pointer" onclick="removerDoCarrinho(${idx})"></i></div></div>`;
+      }).join('');
+      document.getElementById('total-venda').innerText = formatar(total);
+    }
+
+    function removerDoCarrinho(idx) { carrinho.splice(idx, 1); renderCarrinho(); }
+    function limparCarrinho() { carrinho = []; renderCarrinho(); }
+
+    async function gerarImagem() {
+      if(!carrinho.length) return alert("Pedido vazio!");
+      document.getElementById('img-cliente').innerText = document.getElementById('venda-cliente').value;
+      document.getElementById('img-data').innerText = new Date().toLocaleDateString();
+      document.getElementById('img-total').innerText = document.getElementById('total-venda').innerText;
+      document.getElementById('img-corpo').innerHTML = carrinho.map(it => `
+        <tr><td>${it.qtd}</td><td style="text-transform:uppercase">${it.nome}</td><td>${formatar(it.preco)}</td><td>${formatar(it.preco * it.qtd)}</td></tr>`).join('');
+
+      const canvas = await html2canvas(document.getElementById('espelho-pedido'), { scale: 2 });
+      canvas.toBlob(async (blob) => {
+        const file = new File([blob], 'pedido.png', { type: 'image/png' });
+        if (navigator.share) {
+          try { await navigator.share({ files: [file], title: 'Pedido Ouxe' }); } catch(e) {}
+        } else {
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href = url; a.download = 'pedido.png'; a.click();
+        }
+      });
+    }
+
+    function salvar(tipo) {
+      const nomeInput = document.getElementById('cad-nome').value.trim();
+      const preco = parseFloat(document.getElementById('cad-preco').value);
+      if (!nomeInput) return;
+      if (tipo === 'cliente') { clientes.push(nomeInput); localStorage.setItem('ouxe_clientes', JSON.stringify(clientes)); }
+      else { if (isNaN(preco)) return; produtos.push({ nome: nomeInput, preco }); localStorage.setItem('ouxe_produtos', JSON.stringify(produtos)); }
+      document.getElementById('cad-nome').value = ""; document.getElementById('cad-preco').value = "";
+      renderListas();
+    }
+    
+    function apagar(tipo, i) {
+      if(confirm("Deseja excluir?")) {
+        if(tipo === 'cliente') { clientes.splice(i, 1); localStorage.setItem('ouxe_clientes', JSON.stringify(clientes)); }
+        else { produtos.splice(i, 1); localStorage.setItem('ouxe_produtos', JSON.stringify(produtos)); }
+        renderListas();
+      }
+    }
+
+    function editarPreco(i) {
+      const novo = prompt("Novo preço para " + produtos[i].nome, produtos[i].preco);
+      if(novo !== null) {
+        produtos[i].preco = parseFloat(novo);
+        localStorage.setItem('ouxe_produtos', JSON.stringify(produtos));
+        renderListas();
+      }
+    }
+
+    renderListas();
+  </script>
+</body>
+</html>
