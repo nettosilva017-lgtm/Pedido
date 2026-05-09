@@ -1,0 +1,16 @@
+{
+  "name": "Ouxe Distribuidor",
+  "short_name": "Ouxe",
+  "start_url": "./index.html",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#0047ab",
+  "description": "Sistema de Pedidos Ouxe Distribuidor",
+  "icons": [
+    {
+      "src": "1000183732.jpg",
+      "sizes": "1024x1024",
+      "type": "image/jpeg"
+    }
+  ]
+}
