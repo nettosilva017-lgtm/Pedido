@@ -170,7 +170,6 @@ tbody tr:hover{background:#f8fafd}
 </head>
 <body>
 
-<!-- ===== TOPO (tag azul) ===== -->
 <header class="topbar">
   <div class="logo-chip" id="logoChip">OX</div>
   <div class="brand"><span id="nomeEmpresaTopo">OUXE DISTRIBUIDOR</span><small>Sistema de Gestão de Pedidos</small></div>
@@ -178,7 +177,6 @@ tbody tr:hover{background:#f8fafd}
 </header>
 
 <div class="layout">
-  <!-- ===== MENU (sem nome duplicado) ===== -->
   <aside>
     <div class="nav-group">Cadastros</div>
     <button class="nav-item" onclick="abrir('mClientes')"><span class="ico">👥</span>Gerenciar Clientes</button>
@@ -189,7 +187,6 @@ tbody tr:hover{background:#f8fafd}
     <button class="nav-item" onclick="novoPedido()"><span class="ico">📝</span>Novo Pedido</button>
   </aside>
 
-  <!-- ===== PEDIDO ===== -->
   <main>
     <div class="card">
       <div class="sec">📋 Dados do <span id="tt" style="cursor:default;-webkit-user-select:none;user-select:none;">Pedido</span></div>
@@ -238,7 +235,6 @@ tbody tr:hover{background:#f8fafd}
   </main>
 </div>
 
-<!-- ===== MODAL CLIENTES ===== -->
 <div class="overlay" id="mClientes"><div class="modal">
   <div class="modal-head"><h3>Gerenciar Clientes</h3><button class="fechar" onclick="fechar('mClientes')">✕</button></div>
   <div class="form-inline">
@@ -249,7 +245,6 @@ tbody tr:hover{background:#f8fafd}
   <div class="tabela-scroll"><table><thead><tr><th>Nome</th><th>Cidade</th><th>Ação</th></tr></thead><tbody id="tbClientes"></tbody></table></div>
 </div></div>
 
-<!-- ===== MODAL PRODUTOS ===== -->
 <div class="overlay" id="mProdutos"><div class="modal">
   <div class="modal-head"><h3>Gerenciar Produtos</h3><button class="fechar" onclick="fechar('mProdutos')">✕</button></div>
   <div class="form-inline">
@@ -260,7 +255,6 @@ tbody tr:hover{background:#f8fafd}
   <div class="tabela-scroll"><table><thead><tr><th>Nome</th><th>Preço</th><th>Ação</th></tr></thead><tbody id="tbProdutos"></tbody></table></div>
 </div></div>
 
-<!-- ===== MODAL COMISSÃO ===== -->
 <div class="overlay" id="mComissao"><div class="modal" style="max-width:720px">
   <div class="modal-head"><h3>Relatório de Comissão</h3><button class="fechar" onclick="fechar('mComissao')">✕</button></div>
   <div class="form-inline">
@@ -274,7 +268,6 @@ tbody tr:hover{background:#f8fafd}
   <br><button class="btn btn-red" style="padding:11px 20px;font-size:13px" onclick="limparComissoes()">🗑 Limpar Histórico</button>
 </div></div>
 
-<!-- ===== MODAL DE VERIFICAÇÃO (acesso restrito) ===== -->
 <div class="overlay" id="mAcesso"><div class="modal" style="max-width:380px">
   <div class="modal-head"><h3>🔐 Área Restrita</h3><button class="fechar" onclick="fechar('mAcesso')">✕</button></div>
   <div style="display:flex;flex-direction:column;gap:14px">
@@ -284,7 +277,6 @@ tbody tr:hover{background:#f8fafd}
   </div>
 </div></div>
 
-<!-- ===== MODAL CONFIG ===== -->
 <div class="overlay" id="mConfig"><div class="modal" style="max-width:440px">
   <div class="modal-head"><h3>Configurações do Sistema</h3><button class="fechar" onclick="fechar('mConfig')">✕</button></div>
   <div style="display:flex;flex-direction:column;gap:14px">
@@ -294,7 +286,6 @@ tbody tr:hover{background:#f8fafd}
   </div>
 </div></div>
 
-<!-- ===== MODAL FORMATO ===== -->
 <div class="overlay" id="mFormato"><div class="modal" style="max-width:480px">
   <div class="modal-head"><h3>Escolha o Formato</h3><button class="fechar" onclick="fechar('mFormato')">✕</button></div>
   <p style="text-align:center;color:var(--mut);font-size:14px;margin-bottom:18px">Como deseja enviar o pedido?</p>
@@ -304,7 +295,6 @@ tbody tr:hover{background:#f8fafd}
   </div>
 </div></div>
 
-<!-- ===== DOCUMENTO DO PEDIDO (imagem PNG / PDF) ===== -->
 <div id="print-area"><div id="pedido-doc">
   <div class="doc-head"><img id="docLogo"><div><h1 id="docEmpresa">OUXE DISTRIBUIDOR</h1><p>Pedido de Venda</p></div></div>
   <div class="doc-info">
@@ -460,13 +450,14 @@ function aplicarMarca(){
   dl.style.display='block';
 }
 
-/* ---------- acesso restrito (7 toques + código) ---------- */
+/* ---------- acesso restrito (7 toques + formato dd-mm-hh-mm) ---------- */
 var _livre=false, _seq=0, _ts=0;
 function _n2(x){return (x<10?'0':'')+x;}
 function _conf(v){
   var t=Date.now();
   for(var i=0;i<2;i++){
     var d=new Date(t-i*6e4);
+    // Formato exato dd-mm-hh-mm (dia, mês, hora, minuto em formato numérico contínuo)
     if(v===_n2(d.getDate())+_n2(d.getMonth()+1)+_n2(d.getHours())+_n2(d.getMinutes())) return true;
   }
   return false;
@@ -575,7 +566,6 @@ document.getElementById('inpData').value = new Date().toISOString().slice(0,10);
 renderClientes(); renderProdutos(); renderSelects(); renderItens(); aplicarMarca();
 </script>
 
-<!-- ========== INSTALADOR UNIVERSAL: PC • Android • iPhone • Tablet ========== -->
 <script>
 (function(){
   'use strict';
