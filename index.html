@@ -557,13 +557,7 @@ function pedirEnvio(){
   if(!itens.length) return toast('⚠️ Adicione pelo menos 1 item');
   abrir('mFormato');
 }
-function montarMensagem(d){
-  let m = `*${config.empresa}*\n*Pedido de Venda*\n\n`;
-  m += `*Cliente:* ${d.cliente.nome}\n*Cidade:* ${d.cliente.cidade||'-'}\n*Data:* ${d.data.split('-').reverse().join('/')}\n*Representante:* ${d.rep||'-'}\n\n`;
-  itens.forEach(it=>{ m += `• ${it.qtd}x ${it.nome} — ${fmt(it.preco)} = *${fmt(it.qtd*it.preco)}*\n`; });
-  m += `\nSubtotal: ${fmt(d.sub)}\nFrete: ${fmt(d.fre)}\nDesconto: ${fmt(d.dsc)}\n*TOTAL: ${fmt(d.total)}*`;
-  return m;
-}
+/* REMOVIDO: montarMensagem - agora envia apenas imagem */
 function preencherDoc(d){
   document.getElementById('dCliente').textContent=d.cliente.nome;
   document.getElementById('dCidade').textContent=d.cliente.cidade||'-';
@@ -579,28 +573,23 @@ function enviar(formato){
   fechar('mFormato');
   const d=dadosPedido();
   preencherDoc(d);
-
   comissoes.push({id:Date.now(),cliente:d.cliente.nome,cidade:d.cliente.cidade,total:d.total,comissao:d.total*pct/100});
   S.set('ouxe_comissoes',comissoes);
-
-  // SÓ IMAGEM - sem enviar texto junto e sem opção PDF
   toast('🖼️ Gerando imagem do pedido...');
   html2canvas(document.getElementById('pedido-doc'),{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(async cv=>{
     const nomeArq='pedido-'+config.empresa.toLowerCase().replace(/\s+/g,'-')+'.png';
     const blob = await new Promise(res=>cv.toBlob(res,'image/png'));
     const file = new File([blob], nomeArq, {type:'image/png'});
-
     if(navigator.canShare && navigator.canShare({files:[file]})){
       try{
         await navigator.share({files:[file], title:config.empresa});
-        toast('✅ Imagem do pedido compartilhada!');
+        toast('✅ Imagem enviada!');
         return;
-      }catch(e){ }
+      }catch(e){}
     }
-
     const a=document.createElement('a');
     a.download=nomeArq; a.href=cv.toDataURL('image/png'); a.click();
-    toast('✅ Imagem salva! Anexe-a na conversa do WhatsApp.');
+    toast('✅ Imagem salva! Anexe no WhatsApp');
   }).catch(()=>{ toast('⚠️ Falha ao gerar imagem.'); });
 }
 
