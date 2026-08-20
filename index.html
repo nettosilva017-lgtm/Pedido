@@ -346,9 +346,8 @@ tbody tr:hover{background:#f8fafd}
 <div class="overlay" id="mFormato"><div class="modal" style="max-width:480px">
   <div class="modal-head"><h3>Escolha o Formato</h3><button class="fechar" onclick="fechar('mFormato')">✕</button></div>
   <p style="text-align:center;color:var(--mut);font-size:14px;margin-bottom:18px">Como deseja enviar o pedido?</p>
-  <div class="fmt-grid">
+  <div class="fmt-grid" style="grid-template-columns:1fr">
     <div class="fmt-card" onclick="enviar('img')"><div class="big">🖼️</div><b>Enviar como Imagem</b><span>Gera a imagem e compartilha direto no WhatsApp</span><br><span class="tag">Recomendado</span></div>
-    <div class="fmt-card" onclick="enviar('pdf')"><div class="big">📄</div><b>Enviar como PDF</b><span>Abre a impressão para salvar em PDF</span></div>
   </div>
 </div></div>
 
@@ -584,31 +583,25 @@ function enviar(formato){
   comissoes.push({id:Date.now(),cliente:d.cliente.nome,cidade:d.cliente.cidade,total:d.total,comissao:d.total*pct/100});
   S.set('ouxe_comissoes',comissoes);
 
-  const zap=()=>window.open('https://wa.me/?text='+encodeURIComponent(montarMensagem(d)),'_blank');
+  // SÓ IMAGEM - sem enviar texto junto e sem opção PDF
+  toast('🖼️ Gerando imagem do pedido...');
+  html2canvas(document.getElementById('pedido-doc'),{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(async cv=>{
+    const nomeArq='pedido-'+config.empresa.toLowerCase().replace(/\s+/g,'-')+'.png';
+    const blob = await new Promise(res=>cv.toBlob(res,'image/png'));
+    const file = new File([blob], nomeArq, {type:'image/png'});
 
-  if(formato==='img'){
-    toast('🖼️ Gerando imagem do pedido...');
-    html2canvas(document.getElementById('pedido-doc'),{scale:2,backgroundColor:'#ffffff',useCORS:true}).then(async cv=>{
-      const nomeArq='pedido-'+config.empresa.toLowerCase().replace(/\s+/g,'-')+'.png';
-      const blob = await new Promise(res=>cv.toBlob(res,'image/png'));
-      const file = new File([blob], nomeArq, {type:'image/png'});
+    if(navigator.canShare && navigator.canShare({files:[file]})){
+      try{
+        await navigator.share({files:[file], title:config.empresa});
+        toast('✅ Imagem do pedido compartilhada!');
+        return;
+      }catch(e){ }
+    }
 
-      if(navigator.canShare && navigator.canShare({files:[file]})){
-        try{
-          await navigator.share({files:[file], title:config.empresa, text:montarMensagem(d)});
-          toast('✅ Imagem do pedido compartilhada!');
-          return;
-        }catch(e){ }
-      }
-
-      const a=document.createElement('a');
-      a.download=nomeArq; a.href=cv.toDataURL('image/png'); a.click();
-      toast('✅ Imagem salva! Anexe-a na conversa do WhatsApp.');
-      setTimeout(zap,900);
-    }).catch(()=>{ toast('⚠️ Falha ao gerar imagem — abrindo WhatsApp com texto.'); zap(); });
-  } else {
-    setTimeout(()=>{ window.print(); toast('📄 Salve como PDF e anexe no WhatsApp.'); setTimeout(zap,1200); },350);
-  }
+    const a=document.createElement('a');
+    a.download=nomeArq; a.href=cv.toDataURL('image/png'); a.click();
+    toast('✅ Imagem salva! Anexe-a na conversa do WhatsApp.');
+  }).catch(()=>{ toast('⚠️ Falha ao gerar imagem.'); });
 }
 
 /* ---------- bloqueio de inspeção (camada extra) ---------- */
